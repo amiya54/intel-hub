@@ -23,7 +23,7 @@
     font-family: Georgia, 'Noto Serif SC', 'Source Han Serif SC', 'STSong', serif;
     font-size: 42px; font-weight: 700; margin-top: 14px; line-height: 1.25;
   }
-  .sub { margin-top: 12px; color: var(--muted); font-size: 15px; }
+  .sub { margin-top: 12px; color: var(--muted); font-size: 15px; overflow-wrap: anywhere; }
   .rule { height: 1px; background: var(--line); margin: 8px 0 0; }
 
   .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; padding: 34px 0 10px; }
@@ -61,7 +61,7 @@
   <header>
     <div class="kicker">INTEL HUB · 原型</div>
     <h1>技术情报台</h1>
-    <div class="sub">船舶低碳 · 船级社规范 · 涂装前沿 —— 三个自己会跑的情报雷达，入口都在这里。</div>
+    <div class="sub">船舶低碳 · 船级社规范 · 涂装前沿，三个自己会跑的情报雷达，入口都在这里。</div>
     <div class="rule"></div>
   </header>
 
@@ -102,9 +102,9 @@
 
 <script>
   const feeds = [
-    { el: '#upd-lowc',  repo: 'amiya54/FEISHU_WEBHOOK_URL',   path: 'index.html' },
-    { el: '#upd-radar', repo: 'amiya54/rules-radar',          path: 'output/index.html' },
-    { el: '#upd-coat',  repo: 'amiya54/ship-coating-radar',   path: 'index.html' },
+    { el: '#upd-lowc',  repo: 'amiya54/FEISHU_WEBHOOK_URL',   path: 'archive/issues' },
+    { el: '#upd-radar', repo: 'amiya54/rules-radar',          path: 'output/archive' },
+    { el: '#upd-coat',  repo: 'amiya54/ship-coating-radar',   path: 'archive/issues' },
   ];
   feeds.forEach(f => {
     fetch('https://api.github.com/repos/' + f.repo + '/commits?per_page=1&path=' + encodeURIComponent(f.path))
