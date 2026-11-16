@@ -104,12 +104,10 @@
   <header>
     <div class="kicker">技术中心 · 原型</div>
     <h1>技术情报台</h1>
-    <div class="sub">船舶低碳、船级社规范、涂装技术，三块内容各自定期更新。</div>
     <div class="rule"></div>
   </header>
 
   <div class="stats">
-    <div class="stat"><b id="st-issues">—</b><span>累计发布期数</span></div>
     <div class="stat"><b>74</b><span>覆盖公开信源</span></div>
     <div class="stat">
       <div class="live"><i id="st-dot"></i><em id="st-ok">—</em></div>
@@ -123,7 +121,7 @@
       <div class="cadence"><i class="dot" id="dot-lowc"></i>双周 · 周五 08:00 发布</div>
       <h2>船舶低碳情报双周报</h2>
       <div class="desc">燃料动向、新船订单、规则修正案等中英线索，按板块归类整理。</div>
-      <div class="meta"><b>36 个信源</b> · 已发布 <b id="cnt-lowc">—</b> 期 · <span id="upd-lowc">最近更新 —</span></div>
+      <div class="meta"><b>36 个信源</b> · <span id="upd-lowc">最近更新 —</span></div>
       <div class="cta">
         <span>进入</span>
         <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12.5 6.5 18 12l-5.5 5.5"/></svg></i>
@@ -134,7 +132,7 @@
       <div class="cadence"><i class="dot" id="dot-radar"></i>每周 · 周一 / 周四 08:30</div>
       <h2>规范雷达</h2>
       <div class="desc">五家船级社和 IMO 的规则动态，按生效日期排列，临近生效的标红。</div>
-      <div class="meta"><b>31 个官方源</b> · 台账 <b id="cnt-radar">78</b> 条 · 已发布 <b id="cnt-radar-iss">—</b> 期</div>
+      <div class="meta"><b>31 个官方源</b> · 台账 <b id="cnt-radar">—</b> 条</div>
       <div class="cta">
         <span>进入</span>
         <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12.5 6.5 18 12l-5.5 5.5"/></svg></i>
@@ -145,7 +143,7 @@
       <div class="cadence"><i class="dot" id="dot-coat"></i>双周 · 周五 08:00 发布</div>
       <h2>涂装雷达</h2>
       <div class="desc">涂装工艺、防污涂料、环保要求的行业动态，按板块归类整理。</div>
-      <div class="meta"><b>7 组词表</b> · 已发布 <b id="cnt-coat">—</b> 期 · <span id="upd-coat">最近更新 —</span></div>
+      <div class="meta"><b>7 组词表</b> · <span id="upd-coat">最近更新 —</span></div>
       <div class="cta">
         <span>进入</span>
         <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12.5 6.5 18 12l-5.5 5.5"/></svg></i>
@@ -205,22 +203,18 @@
   }
 
   function paint(data) {
-    let total = 0, ok = 0;
+    let ok = 0;
     FEEDS.forEach(f => {
       const d = data[f.key];
       const dot = document.getElementById('dot-' + f.key);
-      const cnt = document.getElementById('cnt-' + f.key);
       const upd = document.getElementById('upd-' + f.key);
-      if (!d || d.count == null) { if (dot) dot.className = 'dot'; return; }
-      total += d.count;
-      if (cnt) cnt.textContent = d.count;
-      const age = d.latest ? daysSince(new Date(d.latest)) : null;
-      if (upd && d.latest) upd.textContent = '最近更新 ' + fmtDate(new Date(d.latest));
-      const healthy = age != null && age <= f.maxDays;
+      if (!d || d.latest == null) { if (dot) dot.className = 'dot'; return; }
+      const age = daysSince(new Date(d.latest));
+      if (upd) upd.textContent = '最近更新 ' + fmtDate(new Date(d.latest));
+      const healthy = age <= f.maxDays;
       if (dot) dot.className = 'dot ' + (healthy ? 'ok' : 'warn');
       if (healthy) ok++;
     });
-    document.getElementById('st-issues').textContent = total || '—';
     document.getElementById('st-ok').textContent = ok + ' / ' + FEEDS.length;
     document.getElementById('st-dot').style.background =
       ok === FEEDS.length ? 'var(--ok)' : (ok > 0 ? 'var(--warn)' : 'var(--idle)');
