@@ -8,6 +8,14 @@
   :root {
     --bg: #FAF9F6; --ink: #16181A; --body: #2C2E30; --muted: #8A8781;
     --line: #E5E1D8; --amber: #C05621; --card: #FFFFFF;
+    --ok: #3B6D11; --warn: #BA7517; --idle: #B4B2A9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16181A; --ink: #E8E6E1; --body: #C9C7C2; --muted: #8A8781;
+      --line: #2E3033; --amber: #D97B45; --card: #1E2022;
+      --ok: #97C459; --warn: #EF9F27; --idle: #5F5E5A;
+    }
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -26,8 +34,21 @@
   .sub { margin-top: 12px; color: var(--muted); font-size: 15px; overflow-wrap: anywhere; }
   .rule { height: 1px; background: var(--line); margin: 8px 0 0; }
 
-  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; padding: 34px 0 10px; }
-  @media (max-width: 860px) { .cards { grid-template-columns: 1fr; } h1 { font-size: 32px; } header { padding: 44px 0 28px; } }
+  .stats {
+    display: flex; gap: 48px; padding: 22px 2px 20px; flex-wrap: wrap;
+  }
+  .stat { display: flex; flex-direction: column; gap: 2px; }
+  .stat b {
+    font-family: Georgia, 'Noto Serif SC', serif; font-size: 26px; font-weight: 700;
+    font-variant-numeric: tabular-nums; line-height: 1.2;
+  }
+  .stat span { font-size: 12px; color: var(--muted); letter-spacing: 1px; }
+  .stat .live { display: flex; align-items: center; gap: 8px; height: 32px; }
+  .stat .live i { width: 8px; height: 8px; border-radius: 50%; background: var(--idle); flex: none; }
+  .stat .live em { font-style: normal; font-size: 15px; font-weight: 600; color: var(--body); }
+
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; padding: 16px 0 10px; }
+  @media (max-width: 860px) { .cards { grid-template-columns: 1fr; } h1 { font-size: 32px; } header { padding: 44px 0 28px; } .stats { gap: 28px; } }
 
   .card {
     background: var(--card); border: 1px solid var(--line); border-radius: 8px;
@@ -39,14 +60,17 @@
     border-color: var(--amber); transform: translateY(-3px);
     box-shadow: 0 12px 28px rgba(22,24,26,.07); outline: none;
   }
-  .cadence { font-size: 11.5px; letter-spacing: 2px; color: var(--amber); }
+  .cadence { font-size: 11.5px; letter-spacing: 2px; color: var(--amber); display: flex; align-items: center; gap: 8px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--idle); flex: none; }
+  .dot.ok { background: var(--ok); }
+  .dot.warn { background: var(--warn); }
   .card h2 {
     font-family: Georgia, 'Noto Serif SC', 'Source Han Serif SC', 'STSong', serif;
     font-size: 22px; margin-top: 10px; line-height: 1.35;
   }
   .desc { margin-top: 10px; font-size: 13.5px; color: var(--body); flex: 1; }
   .meta { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 12px; color: var(--muted); }
-  .meta b { color: var(--body); font-weight: 600; }
+  .meta b { color: var(--body); font-weight: 600; font-variant-numeric: tabular-nums; }
 
   .cta { margin-top: 16px; display: flex; align-items: center; justify-content: space-between; }
   .cta span {
@@ -69,6 +93,9 @@
   footer .rule { margin-bottom: 18px; }
   footer p { font-size: 12.5px; color: var(--muted); }
   footer .amber { color: var(--amber); }
+  footer a { color: var(--muted); text-decoration: none; border-bottom: 1px dotted var(--line); }
+  footer a:hover { color: var(--amber); border-color: var(--amber); }
+  footer .repos { margin-top: 8px; font-size: 12px; }
 </style>
 </head>
 <body>
@@ -81,13 +108,22 @@
     <div class="rule"></div>
   </header>
 
+  <div class="stats">
+    <div class="stat"><b id="st-issues">—</b><span>累计发布期数</span></div>
+    <div class="stat"><b>74</b><span>覆盖公开信源</span></div>
+    <div class="stat">
+      <div class="live"><i id="st-dot"></i><em id="st-ok">—</em></div>
+      <span>按周期运行</span>
+    </div>
+  </div>
+
   <div class="cards">
 
     <a class="card" href="https://amiya54.github.io/FEISHU_WEBHOOK_URL/">
-      <div class="cadence">双周 · 周五 08:00 发布</div>
+      <div class="cadence"><i class="dot" id="dot-lowc"></i>双周 · 周五 08:00 发布</div>
       <h2>船舶低碳情报双周报</h2>
       <div class="desc">燃料动向、新船订单、规则修正案等中英线索，按板块归类整理。</div>
-      <div class="meta"><b>36 个信源</b> ｜ <span id="upd-lowc">最近更新 —</span></div>
+      <div class="meta"><b>36 个信源</b> · 已发布 <b id="cnt-lowc">—</b> 期 · <span id="upd-lowc">最近更新 —</span></div>
       <div class="cta">
         <span>进入</span>
         <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12.5 6.5 18 12l-5.5 5.5"/></svg></i>
@@ -95,10 +131,10 @@
     </a>
 
     <a class="card" href="https://amiya54.github.io/rules-radar/">
-      <div class="cadence">每周 · 周一 / 周四 08:30</div>
+      <div class="cadence"><i class="dot" id="dot-radar"></i>每周 · 周一 / 周四 08:30</div>
       <h2>规范雷达</h2>
       <div class="desc">五家船级社和 IMO 的规则动态，按生效日期排列，临近生效的标红。</div>
-      <div class="meta"><b>31 个官方源 · 78 条台账</b> ｜ <span id="upd-radar">最近更新 —</span></div>
+      <div class="meta"><b>31 个官方源</b> · 台账 <b id="cnt-radar">78</b> 条 · 已发布 <b id="cnt-radar-iss">—</b> 期</div>
       <div class="cta">
         <span>进入</span>
         <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12.5 6.5 18 12l-5.5 5.5"/></svg></i>
@@ -106,10 +142,10 @@
     </a>
 
     <a class="card" href="https://amiya54.github.io/ship-coating-radar/">
-      <div class="cadence">双周 · 周五 08:00 发布</div>
+      <div class="cadence"><i class="dot" id="dot-coat"></i>双周 · 周五 08:00 发布</div>
       <h2>涂装雷达</h2>
       <div class="desc">涂装工艺、防污涂料、环保要求的行业动态，按板块归类整理。</div>
-      <div class="meta"><b>7 组词表</b> ｜ <span id="upd-coat">最近更新 —</span></div>
+      <div class="meta"><b>7 组词表</b> · 已发布 <b id="cnt-coat">—</b> 期 · <span id="upd-coat">最近更新 —</span></div>
       <div class="cta">
         <span>进入</span>
         <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12.5 6.5 18 12l-5.5 5.5"/></svg></i>
@@ -121,28 +157,91 @@
   <footer>
     <div class="rule"></div>
     <p><span class="amber">说明</span>　内容只做线索整理，不作为合规结论。</p>
+    <p class="repos">三个工具都是公开仓库，运行记录可查：
+      <a href="https://github.com/amiya54/FEISHU_WEBHOOK_URL" target="_blank" rel="noopener">低碳双周报</a> ·
+      <a href="https://github.com/amiya54/rules-radar" target="_blank" rel="noopener">规范雷达</a> ·
+      <a href="https://github.com/amiya54/ship-coating-radar" target="_blank" rel="noopener">涂装雷达</a>
+    </p>
   </footer>
 
 </div>
 
 <script>
-  const feeds = [
-    { el: '#upd-lowc',  repo: 'amiya54/FEISHU_WEBHOOK_URL',   path: 'archive/issues' },
-    { el: '#upd-radar', repo: 'amiya54/rules-radar',          path: 'output/archive' },
-    { el: '#upd-coat',  repo: 'amiya54/ship-coating-radar',   path: 'archive/issues' },
+  // 数据源：各仓库归档目录（文件数=期数，文件名含发布日期）+ 规范雷达台账
+  const FEEDS = [
+    { key: 'lowc',  repo: 'amiya54/FEISHU_WEBHOOK_URL', path: 'archive/issues',  dir: 'archive/issues',  maxDays: 16 },
+    { key: 'radar', repo: 'amiya54/rules-radar',        path: 'output/archive',  dir: 'output/archive',  maxDays: 6 },
+    { key: 'coat',  repo: 'amiya54/ship-coating-radar', path: 'archive/issues',  dir: 'archive/issues',  maxDays: 16 },
   ];
-  feeds.forEach(f => {
-    fetch('https://api.github.com/repos/' + f.repo + '/commits?per_page=1&path=' + encodeURIComponent(f.path))
-      .then(r => r.json())
-      .then(d => {
-        const date = d && d[0] && d[0].commit && d[0].commit.committer.date;
-        if (!date) return;
-        const dt = new Date(date);
-        document.querySelector(f.el).textContent =
-          '最近更新 ' + (dt.getMonth() + 1) + ' 月 ' + dt.getDate() + ' 日';
-      })
-      .catch(() => {});
-  });
+  const TTL = 15 * 60 * 1000;
+  const CK = 'ih-cache-v2';
+
+  function dateFromName(name) {
+    const m = /(\d{4})-(\d{2})-(\d{2})/.exec(name || '');
+    return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+  }
+  function fmtDate(d) { return (d.getMonth() + 1) + ' 月 ' + d.getDate() + ' 日'; }
+  function daysSince(d) { return Math.floor((Date.now() - d.getTime()) / 86400000); }
+
+  async function ghJSON(url) {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(r.status);
+    return r.json();
+  }
+
+  async function loadOne(f) {
+    const files = await ghJSON('https://api.github.com/repos/' + f.repo + '/contents/' + f.dir);
+    if (!Array.isArray(files)) throw new Error('bad');
+    const names = files.filter(x => x.type === 'file' && /\.html?$/i.test(x.name)).map(x => x.name).sort();
+    const latest = dateFromName(names[names.length - 1]);
+    return { count: names.length, latest: latest ? latest.getTime() : null };
+  }
+
+  async function loadLedger() {
+    const d = await ghJSON('https://raw.githubusercontent.com/amiya54/rules-radar/main/data/items.json');
+    if (Array.isArray(d)) return d.length;
+    if (d && typeof d === 'object') return Object.keys(d).length;
+    throw new Error('bad');
+  }
+
+  function paint(data) {
+    let total = 0, ok = 0;
+    FEEDS.forEach(f => {
+      const d = data[f.key];
+      const dot = document.getElementById('dot-' + f.key);
+      const cnt = document.getElementById('cnt-' + f.key);
+      const upd = document.getElementById('upd-' + f.key);
+      if (!d || d.count == null) { if (dot) dot.className = 'dot'; return; }
+      total += d.count;
+      if (cnt) cnt.textContent = d.count;
+      const age = d.latest ? daysSince(new Date(d.latest)) : null;
+      if (upd && d.latest) upd.textContent = '最近更新 ' + fmtDate(new Date(d.latest));
+      const healthy = age != null && age <= f.maxDays;
+      if (dot) dot.className = 'dot ' + (healthy ? 'ok' : 'warn');
+      if (healthy) ok++;
+    });
+    document.getElementById('st-issues').textContent = total || '—';
+    document.getElementById('st-ok').textContent = ok + ' / ' + FEEDS.length;
+    document.getElementById('st-dot').style.background =
+      ok === FEEDS.length ? 'var(--ok)' : (ok > 0 ? 'var(--warn)' : 'var(--idle)');
+    const lr = document.getElementById('cnt-radar');
+    if (data.ledger != null) lr.textContent = data.ledger;
+  }
+
+  async function main() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(CK) || 'null');
+      if (cached && Date.now() - cached.ts < TTL) { paint(cached.data); return; }
+    } catch (e) {}
+    const data = {};
+    await Promise.all(FEEDS.map(async f => {
+      try { data[f.key] = await loadOne(f); } catch (e) { data[f.key] = null; }
+    }));
+    try { data.ledger = await loadLedger(); } catch (e) {}
+    paint(data);
+    try { localStorage.setItem(CK, JSON.stringify({ ts: Date.now(), data })); } catch (e) {}
+  }
+  main();
 </script>
 </body>
 </html>
